@@ -1,6 +1,9 @@
-﻿using bookwormAPI.EF.DataAccess.Context;
+﻿using bookwormAPI.DTO;
+using bookwormAPI.EF.DataAccess.Context;
 using bookwormAPI.EF.DataAccess.Models;
 using bookwormAPI.EF.DataAccess.Repositories.Interfaces;
+using bookwormAPI.EF.DataAccess.Services;
+using Microsoft.AspNet.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -26,7 +29,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories
 
         public async Task<User> GetUserById(int id)
         {
-            User user = await _context.Users.FindAsync(id);
+            User? user = await _context.Users.FindAsync(id);
             
             if (user == null) {
 
@@ -37,11 +40,60 @@ namespace bookwormAPI.EF.DataAccess.Repositories
         }
 
 
-        //Create the service to hash password
-        public Task<User> Createuser(User user)
+        public async Task<User> Createuser(DTO.UserDTO user)
         {
-            
+            var passwordService = new PasswordService();
+            string hashed = passwordService.HashPassword(user.Password);
            
+            user.Password = hashed;
+
+            var userEntity = new User
+            {
+                UserName = user.Email,
+                UserPasswordHash = hashed,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                RevokedAt = DateTime.UtcNow.AddMinutes(15),
+                IsActive = true,
+            };
+
+
+            await _context.Users.AddAsync(userEntity);
+            await _context.SaveChangesAsync();
+            return userEntity;
         }
+
+        //Check this in case of a mistake
+        public async Task<User> UpdateUser(int id, string name, string passwordHashed )
+        {
+            User? existingUser = await _context.Users.FindAsync(id);
+
+            if (existingUser == null) {
+                throw new Exception("User not found");        
+            }
+
+            var passwordService = new PasswordService();
+            string hashed = passwordService.HashPassword(passwordHashed);
+
+            existingUser.UserName = name;
+            existingUser.UserPasswordHash = hashed;
+
+            await _context.SaveChangesAsync();
+            return existingUser;
+        }
+
+        public async Task DeleteUser (int id)
+        {
+            User? existingUser = await _context.Users.FindAsync(id);
+
+            if (existingUser == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            _context.Users.Remove(existingUser);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

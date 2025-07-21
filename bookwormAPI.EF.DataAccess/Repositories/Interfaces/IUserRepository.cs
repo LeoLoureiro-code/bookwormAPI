@@ -13,11 +13,11 @@ namespace bookwormAPI.EF.DataAccess.Repositories.Interfaces
 
         Task<User> GetUserById(int id);
 
-        Task<User> Createuser(User user);
+        Task<User> Createuser(DTO.UserDTO user);
 
-        Task<User> Updateuser(User user);
+        Task<User> UpdateUser(int id, string name, string passwordhashed);
 
-        Task<User> Deleteuser(int id);
+        Task DeleteUser(int id);
 
     }
 }
