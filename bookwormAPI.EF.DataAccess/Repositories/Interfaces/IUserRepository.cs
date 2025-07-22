@@ -1,4 +1,5 @@
 ﻿using bookwormAPI.EF.DataAccess.Models;
+using bookwormAPI.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories.Interfaces
 
         Task<User> GetUserById(int id);
 
-        Task<User> Createuser(DTO.UserDTO user);
+        Task<User> CreateUser(UserDTO user);
 
         Task<User> UpdateUser(int id, string name, string passwordhashed);
 
