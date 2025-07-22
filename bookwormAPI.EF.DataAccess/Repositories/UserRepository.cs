@@ -40,7 +40,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories
         }
 
 
-        public async Task<User> Createuser(DTO.UserDTO user)
+        public async Task<User> CreateUser(UserDTO user)
         {
             var passwordService = new PasswordService();
             string hashed = passwordService.HashPassword(user.Password);
