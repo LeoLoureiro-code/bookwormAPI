@@ -13,11 +13,11 @@ namespace bookwormAPI.EF.DataAccess.Repositories.Interfaces
     {
         Task<IEnumerable<Book>> GetAllBooks();
 
-        Task<User> GetBookById(int id);
+        Task<Book> GetBookById(int id);
 
-        Task<User> CreateBook(BookDTO user);
+        Task<Book> CreateBook(BookDTO user);
 
-        Task<User> UpdateBook(int id, string bookTitle, string bookAuthor, int bookPages, string bookStatus, string bookFeeling);
+        Task<Book> UpdateBook(int id, string bookTitle, string bookAuthor, int bookPages, string bookStatus, string bookFeeling);
 
         Task DeleteBook(int id);
     }
