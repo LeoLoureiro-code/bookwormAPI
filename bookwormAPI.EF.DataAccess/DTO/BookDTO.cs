@@ -8,14 +8,14 @@ namespace bookwormAPI.EF.DataAccess.DTO
 {
     public class BookDTO
     {
-        public string BookTitle { get; set; } = null!;
+        public string Title { get; set; } = null!;
 
-        public string BookAuthor { get; set; } = null!;
+        public string Author { get; set; } = null!;
 
-        public int BookPages { get; set; }
+        public int Pages { get; set; }
 
-        public string BookStatus { get; set; } = null!;
+        public string Status { get; set; } = null!;
 
-        public string? BookFeeling { get; set; }
+        public string? Feeling { get; set; }
     }
 }
