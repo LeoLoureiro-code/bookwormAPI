@@ -57,17 +57,37 @@ namespace bookwormAPI.EF.DataAccess.Repositories
             return bookEntity;
         }
 
-        public Task<User> UpdateBook(int id, string bookTitle, string bookAuthor, int bookPages, string bookStatus, string bookFeeling)
+        public async Task<Book> UpdateBook(int id, string bookTitle, string bookAuthor, int bookPages, string bookStatus, string bookFeeling)
         {
-            throw new NotImplementedException();
+            Book? existingBook = await _context.Books.FindAsync(id);
+            if (existingBook == null)
+            {
+                throw new Exception("Book not found");
+            }
+
+            existingBook.BookTitle = bookTitle;
+            existingBook.BookAuthor = bookAuthor;
+            existingBook.BookPages = bookPages;
+            existingBook.BookStatus = bookStatus;
+            existingBook.BookFeeling = bookFeeling;
+
+            await _context.SaveChangesAsync();
+            return existingBook;
         }
 
-        public Task DeleteBook(int id)
+        public async Task DeleteBook(int id)
         {
-            throw new NotImplementedException();
+            Book? existingBook = await _context.Books.FindAsync(id);
+            
+            if(existingBook == null)
+            {
+                throw new Exception("Book not found");
+            }
+
+            _context.Remove(existingBook);
+            await _context.SaveChangesAsync();
         }
 
-
-
+     
     }
 }
