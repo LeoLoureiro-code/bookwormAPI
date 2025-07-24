@@ -68,7 +68,8 @@ namespace bookwormAPI.EF.DataAccess.Repositories
         {
             User? existingUser = await _context.Users.FindAsync(id);
 
-            if (existingUser == null) {
+            if (existingUser == null) 
+            {
                 throw new Exception("User not found");        
             }
 
