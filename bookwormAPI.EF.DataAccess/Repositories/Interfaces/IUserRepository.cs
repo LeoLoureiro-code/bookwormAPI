@@ -14,6 +14,8 @@ namespace bookwormAPI.EF.DataAccess.Repositories.Interfaces
 
         Task<User> GetUserById(int id);
 
+        Task<User> GetUserByName(string username);
+
         Task<User> CreateUser(UserDTO user);
 
         Task<User> UpdateUser(int id, string name, string passwordhashed);
