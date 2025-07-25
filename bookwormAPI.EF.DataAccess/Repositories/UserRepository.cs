@@ -16,7 +16,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories
     public class UserRepository: IUserRepository
     {
 
-        private readonly BookwormContext _context;
+        private readonly BookwormContext _context; 
 
         public UserRepository(BookwormContext context) {
             _context = context; 
@@ -39,6 +39,18 @@ namespace bookwormAPI.EF.DataAccess.Repositories
             return user;
         }
 
+        public async Task<User> GetUserByName(string username)
+        {
+            User? user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (user == null) 
+            {
+                throw new Exception("User not found.");
+            }
+
+            //Use PaswordService to check the password too and then return user
+
+        }
 
         public async Task<User> CreateUser(UserDTO user)
         {
