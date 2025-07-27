@@ -8,7 +8,7 @@ namespace bookwormAPI.EF.DataAccess.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<string> GetAuth(string username, string password);
+        public Task<string> LoginAsync(string username, string password);
 
     }
 }
