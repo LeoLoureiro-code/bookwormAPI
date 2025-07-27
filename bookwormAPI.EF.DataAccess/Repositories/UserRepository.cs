@@ -39,17 +39,20 @@ namespace bookwormAPI.EF.DataAccess.Repositories
             return user;
         }
 
-        public async Task<User> GetUserByName(string username)
+        public async Task<User> GetUserByNameAndPasswordAsync(string username, string plainPassword)
         {
-            User? user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
 
-            if (user == null) 
-            {
+
+            if (user == null)
                 throw new Exception("User not found.");
-            }
+            var passwordService = new PasswordService();
 
-            //Use PaswordService to check the password too and then return user
+            bool isValid = passwordService.VerifyPassword(user.UserPasswordHash, plainPassword);
+            if (!isValid)
+                throw new Exception("Invalid password.");
 
+            return user;
         }
 
         public async Task<User> CreateUser(UserDTO user)

@@ -14,7 +14,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories.Interfaces
 
         Task<User> GetUserById(int id);
 
-        Task<User> GetUserByName(string username);
+        Task<User> GetUserByNameAndPasswordAsync(string username, string plainPassword);
 
         Task<User> CreateUser(UserDTO user);
 
