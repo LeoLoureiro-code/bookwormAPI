@@ -42,6 +42,13 @@ namespace bookwormAPI.EF.DataAccess.Repositories
             return book;
         }
 
+        public async Task<IEnumerable<Book>> GetBooksByUserIdAsync(int userId)
+        {
+            return await _context.Books
+                .Where(b => b.UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task<Book> CreateBook(BookDTO book)
         {
             var bookEntity = new Book
