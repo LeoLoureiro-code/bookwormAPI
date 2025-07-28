@@ -103,6 +103,11 @@ public partial class BookwormContext : DbContext
             entity.Property(e => e.UserPasswordHash)
                 .HasMaxLength(200)
                 .HasColumnName("user_password_hash");
+
+            entity.Property(e => e.RefreshToken)
+                .HasMaxLength(200)
+                .HasColumnName("refresh_token");
+
         });
 
         OnModelCreatingPartial(modelBuilder);
