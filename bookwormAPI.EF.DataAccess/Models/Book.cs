@@ -15,7 +15,7 @@ public partial class Book
 
     public string BookStatus { get; set; } = null!;
 
-    public string? BookFeeling { get; set; }
+    public string BookFeeling { get; set; }
 
     public int UserId { get; set; }
 

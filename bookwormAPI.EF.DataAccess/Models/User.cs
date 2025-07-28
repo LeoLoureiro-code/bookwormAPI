@@ -17,7 +17,12 @@ public partial class User
 
     public DateTime RevokedAt { get; set; }
 
+    public string? RefreshToken { get; set; }
+
+
     public bool IsActive { get; set; }
 
     public virtual ICollection<Book> Books { get; set; } = new List<Book>();
+
+
 }
