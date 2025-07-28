@@ -18,6 +18,8 @@ namespace bookwormAPI.EF.DataAccess.Services
             return _hasher.HashPassword(null, password);
         }
 
+
+
         public bool VerifyPassword(string hashedPassword, string providedPassword)
         {
             var result = _hasher.VerifyHashedPassword(null, hashedPassword, providedPassword);
