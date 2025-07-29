@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace bookwormAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("Bookworm/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -74,6 +74,30 @@ namespace bookwormAPI.Controllers
             }
         }
 
+        [HttpPost("find-by-credentials")]
+
+        public async Task<ActionResult<User>> GetUserByCredentials([FromBody] UserDTO user)
+        {
+            try
+            {
+                var existingUser = await _userRepository.GetUserByNameAndPasswordAsync(user.Email, user.Password);
+
+                if (existingUser == null)
+                {
+                    throw new Exception("User not found.");
+                }
+
+                return Ok(existingUser);
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                   detail: ex.Message,
+                   title: "An error occurred while fetching user.",
+                   statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
         //POST: api/Users
         [HttpPost("create-user")]
         public async Task<ActionResult> CreateUser([FromBody] UserDTO user)
@@ -87,7 +111,7 @@ namespace bookwormAPI.Controllers
                         Message = "Email and password are required."
                     });
                 }
-                var createdUser = await _userRepository.Createuser(user);
+                var createdUser = await _userRepository.CreateUser(user);
 
                 return CreatedAtAction(nameof(GetUser), new { id = createdUser.UserId }, createdUser);
             }
