@@ -40,7 +40,7 @@ namespace bookwormAPI.EF.DataAccess.Services
             var accessToken = GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
 
-            // Guardar el refresh token y su expiración en el usuario
+            
             user.RefreshToken = refreshToken;
             user.ExpiresAt = DateTime.UtcNow.AddDays(7);
             await _userRepository.UpdateUser(user.UserId, user.UserName, user.UserPasswordHash);
@@ -60,7 +60,7 @@ namespace bookwormAPI.EF.DataAccess.Services
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new Claim(ClaimTypes.Name, user.UserName)
         }),
-                Expires = DateTime.UtcNow.AddMinutes(15), // ⏳ corto
+                Expires = DateTime.UtcNow.AddMinutes(15), 
                 Issuer = _config["Jwt:Issuer"],
                 Audience = _config["Jwt:Audience"],
                 SigningCredentials = new SigningCredentials(
@@ -75,6 +75,18 @@ namespace bookwormAPI.EF.DataAccess.Services
         private string GenerateRefreshToken()
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+
+        public async Task RevokeRefreshTokenAsync(int userId)
+        {
+            var user = await _userRepository.GetUserById(userId);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            user.RefreshToken = null;
+            user.ExpiresAt = null;
+
+            await _userRepository.UpdateUser(user.UserId, user.UserName, user.UserPasswordHash);
         }
     }
 }
