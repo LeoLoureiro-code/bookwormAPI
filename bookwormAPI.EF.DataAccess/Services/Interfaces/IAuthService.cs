@@ -10,5 +10,7 @@ namespace bookwormAPI.EF.DataAccess.Services.Interfaces
     {
         Task<(string AccessToken, string RefreshToken)> LoginAsync(string username, string password);
 
+        Task RevokeRefreshTokenAsync(int userId);
+
     }
 }
