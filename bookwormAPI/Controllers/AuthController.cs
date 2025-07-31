@@ -1,4 +1,5 @@
 ﻿using bookwormAPI.DTO;
+using bookwormAPI.EF.DataAccess.DTO;
 using bookwormAPI.EF.DataAccess.Services;
 using bookwormAPI.EF.DataAccess.Services.Interfaces;
 using Humanizer;
@@ -22,11 +23,11 @@ namespace bookwormAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserDTO user)
+        public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
             try
             {
-                var (accessToken, refreshToken) = await _authService.LoginAsync(user.Email, user.Password);
+                var (accessToken, refreshToken) = await _authService.LoginAsync(login.Email, login.Password);
                 return Ok(new
                 {
                     accessToken,
@@ -42,7 +43,7 @@ namespace bookwormAPI.Controllers
             }
         }
 
-            [HttpPost("refresh")]
+        [HttpPost("refresh")]
         public async Task<ActionResult> Refresh([FromBody] UserDTO userDTO)
         {
             var (newAccessToken, newRefreshToken) = await _authService.LoginAsync(userDTO.Email, userDTO.Password);
