@@ -1,4 +1,5 @@
-﻿using System;
+﻿using bookwormAPI.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,9 @@ namespace bookwormAPI.EF.DataAccess.Services.Interfaces
     {
         Task<(string AccessToken, string RefreshToken)> LoginAsync(string username, string password);
 
-        Task RevokeRefreshTokenAsync(int userId);
+
+        //Create this method later
+        //Task RevokeRefreshTokenAsync(string email, UserDTO existedUser);
 
     }
 }
