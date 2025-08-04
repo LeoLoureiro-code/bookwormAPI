@@ -1,8 +1,10 @@
 ﻿using bookwormAPI.DTO;
+using bookwormAPI.EF.DataAccess.DTO;
 using bookwormAPI.EF.DataAccess.Models;
 using bookwormAPI.EF.DataAccess.Repositories;
 using bookwormAPI.EF.DataAccess.Repositories.Interfaces;
 using bookwormAPI.EF.DataAccess.Services;
+using bookwormAPI.EF.DataAccess.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +16,9 @@ namespace bookwormAPI.Controllers
     {
 
         private readonly IUserRepository _userRepository;
-        private readonly PasswordService _passwordService;
+        private readonly IPasswordService _passwordService;
 
-        public UserController(IUserRepository userRepository, PasswordService passwordService)
+        public UserController(IUserRepository userRepository, IPasswordService passwordService)
         {
             _userRepository = userRepository;
             _passwordService = passwordService;
@@ -76,11 +78,11 @@ namespace bookwormAPI.Controllers
 
         [HttpPost("find-by-credentials")]
 
-        public async Task<ActionResult<User>> GetUserByCredentials([FromBody] UserDTO user)
+        public async Task<ActionResult<User>> GetUserByCredentials([FromBody] LoginDTO login)
         {
             try
             {
-                var existingUser = await _userRepository.GetUserByNameAndPasswordAsync(user.Email, user.Password);
+                var existingUser = await _userRepository.GetUserByNameAndPasswordAsync(login.Email, login.Password);
 
                 if (existingUser == null)
                 {
@@ -118,7 +120,7 @@ namespace bookwormAPI.Controllers
             catch (Exception ex)
             {
                 return Problem(
-                    detail: ex.Message,
+                    detail: ex.InnerException?.Message ?? ex.Message,
                     title: "An error occurred while creating the user.",
                     statusCode: StatusCodes.Status500InternalServerError);
             }
