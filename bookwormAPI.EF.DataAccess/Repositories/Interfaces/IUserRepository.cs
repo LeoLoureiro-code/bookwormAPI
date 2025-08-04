@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using bookwormAPI.EF.DataAccess.DTO;
 
 namespace bookwormAPI.EF.DataAccess.Repositories.Interfaces
 {
@@ -14,7 +15,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories.Interfaces
 
         Task<User> GetUserById(int id);
 
-        Task<User> GetUserByNameAndPasswordAsync(string username, string plainPassword);
+        Task<User> GetUserByName(string username);
 
         Task<User> CreateUser(UserDTO user);
 

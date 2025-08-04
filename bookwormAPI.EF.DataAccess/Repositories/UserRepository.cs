@@ -3,6 +3,7 @@ using bookwormAPI.EF.DataAccess.Context;
 using bookwormAPI.EF.DataAccess.Models;
 using bookwormAPI.EF.DataAccess.Repositories.Interfaces;
 using bookwormAPI.EF.DataAccess.Services;
+using bookwormAPI.EF.DataAccess.Services.Interfaces;
 using Microsoft.AspNet.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,10 +17,13 @@ namespace bookwormAPI.EF.DataAccess.Repositories
     public class UserRepository: IUserRepository
     {
 
-        private readonly BookwormContext _context; 
+        private readonly BookwormContext _context;
+        private readonly IPasswordService _passwordService;
+        private readonly IAuthService _authService;
 
-        public UserRepository(BookwormContext context) {
-            _context = context; 
+        public UserRepository(BookwormContext context, IPasswordService passwordService) {
+            _context = context;
+            _passwordService = passwordService;
         }
 
         public async Task<IEnumerable<User>> GetAllUsers()
@@ -39,28 +43,21 @@ namespace bookwormAPI.EF.DataAccess.Repositories
             return user;
         }
 
-        public async Task<User> GetUserByNameAndPasswordAsync(string username, string plainPassword)
+        public async Task<User> GetUserByName(string username)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
 
 
             if (user == null)
                 throw new Exception("User not found.");
-            var passwordService = new PasswordService();
-
-            bool isValid = passwordService.VerifyPassword(user.UserPasswordHash, plainPassword);
-            if (!isValid)
-                throw new Exception("Invalid password.");
 
             return user;
         }
 
         public async Task<User> CreateUser(UserDTO user)
         {
-            var passwordService = new PasswordService();
-            string hashed = passwordService.HashPassword(user.Password);
+            string hashed = _passwordService.HashPassword(user.Password);
            
-            user.Password = hashed;
 
             var userEntity = new User
             {
@@ -70,6 +67,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
                 RevokedAt = DateTime.UtcNow.AddMinutes(15),
                 IsActive = true,
+                RefreshToken = ""
             };
 
 
@@ -78,21 +76,18 @@ namespace bookwormAPI.EF.DataAccess.Repositories
             return userEntity;
         }
 
-        //Check this in case of a mistake
-        public async Task<User> UpdateUser(int id, string name, string passwordHashed )
+
+        public async Task<User> UpdateUser(int id, string name, string passwordHashed)
         {
             User? existingUser = await _context.Users.FindAsync(id);
 
-            if (existingUser == null) 
-            {
-                throw new Exception("User not found");        
-            }
-
-            var passwordService = new PasswordService();
-            string hashed = passwordService.HashPassword(passwordHashed);
+            if (existingUser == null)
+                throw new Exception("User not found");
 
             existingUser.UserName = name;
-            existingUser.UserPasswordHash = hashed;
+
+            // Store the hash as is, do NOT rehash it
+            existingUser.UserPasswordHash = passwordHashed;
 
             await _context.SaveChangesAsync();
             return existingUser;
