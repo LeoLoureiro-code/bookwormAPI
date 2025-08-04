@@ -1,7 +1,10 @@
-﻿using bookwormAPI.EF.DataAccess.Models;
+﻿using bookwormAPI.DTO;
+using bookwormAPI.EF.DataAccess.DTO;
+using bookwormAPI.EF.DataAccess.Models;
 using bookwormAPI.EF.DataAccess.Repositories.Interfaces;
 using bookwormAPI.EF.DataAccess.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -26,13 +29,15 @@ namespace bookwormAPI.EF.DataAccess.Services
             _userRepository = userRepository;
             _passwordService = passwordService;
             _config = config;
+
         }
 
         public async Task<(string AccessToken, string RefreshToken)> LoginAsync(string username, string password)
         {
-            var user = await _userRepository.GetUserByNameAndPasswordAsync(username, password);
+            var user = await _userRepository.GetUserByName(username);
             if (user == null)
                 throw new Exception("User not found.");
+
 
             if (!_passwordService.VerifyPassword(user.UserPasswordHash, password))
                 throw new Exception("Invalid password.");
@@ -72,21 +77,24 @@ namespace bookwormAPI.EF.DataAccess.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private string GenerateRefreshToken()
+        public async Task RevokeRefreshTokenAsync(string email, string password)
         {
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        }
-
-        public async Task RevokeRefreshTokenAsync(int userId)
-        {
-            var user = await _userRepository.GetUserById(userId);
+            var user = await _userRepository.GetUserByName(email);
             if (user == null)
                 throw new Exception("User not found.");
+
+            if (!_passwordService.VerifyPassword(user.UserPasswordHash, password))
+                throw new Exception("Invalid password.");
 
             user.RefreshToken = null;
             user.ExpiresAt = null;
 
             await _userRepository.UpdateUser(user.UserId, user.UserName, user.UserPasswordHash);
+        }
+
+        private string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
     }
 }
