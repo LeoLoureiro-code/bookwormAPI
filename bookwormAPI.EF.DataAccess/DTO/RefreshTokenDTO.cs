@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace bookwormAPI.EF.DataAccess.DTO
 {
-    internal class RefreshTokenDTO
+    public class RefreshTokenDTO
     {
+        public string RefreshToken { get; set; }
     }
 }
