@@ -14,5 +14,7 @@ namespace bookwormAPI.EF.DataAccess.DTO
 
         [Required]
         public string Password { get; set; } = null!;
+
+        public string RefreshToken { get; set; }
     }
 }
