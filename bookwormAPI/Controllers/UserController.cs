@@ -82,7 +82,7 @@ namespace bookwormAPI.Controllers
         {
             try
             {
-                var existingUser = await _userRepository.GetUserByNameAndPasswordAsync(login.Email, login.Password);
+                var existingUser = await _userRepository.GetUserByName(login.Email);
 
                 if (existingUser == null)
                 {
@@ -104,6 +104,8 @@ namespace bookwormAPI.Controllers
         [HttpPost("create-user")]
         public async Task<ActionResult> CreateUser([FromBody] UserDTO user)
         {
+
+
             try
             {
                 if (!ModelState.IsValid)
@@ -124,35 +126,36 @@ namespace bookwormAPI.Controllers
                     title: "An error occurred while creating the user.",
                     statusCode: StatusCodes.Status500InternalServerError);
             }
+
         }
 
-        //PUT: api/users/5
         [HttpPut("update-user/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] User user)
         {
             try
             {
-                // Check if route ID matches body ID (if applicable)
                 if (user.UserId != 0 && user.UserId != id)
-                {
                     return BadRequest("User ID in the body does not match URL.");
-                }
 
-                // Optional: Basic validation
-                if (string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.UserPasswordHash))
-                {
-                    return BadRequest("Email and password cannot be empty.");
-                }
+                if (string.IsNullOrWhiteSpace(user.UserName))
+                    return BadRequest("Email cannot be empty.");
 
-                // Hash the password before updating
-                user.UserPasswordHash = _passwordService.HashPassword(user.UserPasswordHash);
-
-                var updated = await _userRepository.UpdateUser(id, user.UserName, user.UserPasswordHash);
-
-                if (updated == null)
-                {
+               
+                var existingUser = await _userRepository.GetUserById(id);
+                if (existingUser == null)
                     return NotFound($"User with ID {id} not found.");
+
+                
+                if (!string.IsNullOrWhiteSpace(user.UserPasswordHash) &&
+                    user.UserPasswordHash != existingUser.UserPasswordHash)
+                {
+                    
+                    existingUser.UserPasswordHash = _passwordService.HashPassword(user.UserPasswordHash);
                 }
+              
+                existingUser.UserName = user.UserName;
+
+                await _userRepository.UpdateUser(existingUser.UserId, existingUser.UserName, existingUser.UserPasswordHash);
 
                 return NoContent();
             }
@@ -164,6 +167,7 @@ namespace bookwormAPI.Controllers
                     statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+
 
         // DELETE: api/Users/5
         [HttpDelete("delete-user/{id}")]
