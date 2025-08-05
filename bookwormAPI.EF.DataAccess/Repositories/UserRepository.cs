@@ -86,7 +86,6 @@ namespace bookwormAPI.EF.DataAccess.Repositories
 
             existingUser.UserName = name;
 
-            // Store the hash as is, do NOT rehash it
             existingUser.UserPasswordHash = passwordHashed;
 
             await _context.SaveChangesAsync();
