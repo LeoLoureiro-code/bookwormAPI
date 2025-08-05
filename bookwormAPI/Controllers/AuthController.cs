@@ -23,7 +23,7 @@ namespace bookwormAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO login)
+        public async Task<IActionResult> Login([FromBody] UserDTO login)
         {
             try
             {
@@ -52,11 +52,12 @@ namespace bookwormAPI.Controllers
 
         [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout([FromBody] LoginDTO login)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            await _authService.RevokeRefreshTokenAsync(userId);
+            await _authService.RevokeAndRefreshTokenAsync(login.Email, login.Password);
             return Ok(new { Message = "Logged out successfully." });
         }
     }
+}
 }
