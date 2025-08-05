@@ -77,7 +77,7 @@ namespace bookwormAPI.EF.DataAccess.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public async Task RevokeRefreshTokenAsync(string email, string password)
+        public async Task RevokeAndRefreshTokenAsync(string email, string password)
         {
             var user = await _userRepository.GetUserByName(email);
             if (user == null)
