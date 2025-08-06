@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Bookworm.API.Test/obj/Debug/net8.0
+/Bookworm.API.Test/obj
