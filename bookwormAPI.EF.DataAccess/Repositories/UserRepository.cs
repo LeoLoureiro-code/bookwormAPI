@@ -56,6 +56,13 @@ namespace bookwormAPI.EF.DataAccess.Repositories
 
         public async Task<User> CreateUser(UserDTO user)
         {
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.Email);
+            if (existingUser != null)
+            {
+                throw new Exception("A user with this email already exists.");
+            }
+
             string hashed = _passwordService.HashPassword(user.Password);
            
 
