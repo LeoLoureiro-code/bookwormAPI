@@ -3,6 +3,7 @@ using bookwormAPI.EF.DataAccess.DTO;
 using bookwormAPI.EF.DataAccess.Models;
 using bookwormAPI.EF.DataAccess.Repositories;
 using bookwormAPI.EF.DataAccess.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -21,6 +22,7 @@ namespace bookwormAPI.Controllers
         }
 
         //Get: api/all-books
+        [Authorize]
         [HttpGet("all-book")]
         public async Task<ActionResult<IEnumerable<Book>>> GetAllBooks()
         {
@@ -44,6 +46,7 @@ namespace bookwormAPI.Controllers
         }
 
         //Get: api/all-book/User
+        [Authorize]
         [HttpGet("my-books")]
         public async Task<ActionResult<IEnumerable<Book>>> GetMyBooks()
         {
@@ -58,7 +61,7 @@ namespace bookwormAPI.Controllers
         }
 
         //Get:api/Books/5
-
+        [Authorize]
         [HttpGet("find-by-id/{id}")]
         public async Task<ActionResult<Book>> GetBook(int id)
         {
@@ -87,6 +90,7 @@ namespace bookwormAPI.Controllers
         }
 
         //POST: api/Book
+        [Authorize]
         [HttpPost("create-book")]
         public async Task<ActionResult> CreateBook([FromBody] BookDTO book)
         {
@@ -116,36 +120,36 @@ namespace bookwormAPI.Controllers
             }
         }
 
-        ////PUT: api/books/5
-        ///DO IT AFTER THE JWT ARE CORRECT
-        //[HttpPut("update-book/{id}")]
-        //public async Task<ActionResult> UpdateBook(int id, [FromBody] Book book)
-        //{
-        //    try
-        //    {
-        //        // Check if route ID matches body ID (if applicable)
-        //        if (book.BookId != 0 && book.BookId != id)
-        //        {
-        //            return BadRequest("Book ID in the body does not match URL.");
-        //        }
+        //PUT: api/books/5
+        [Authorize]
+        [HttpPut("update-book/{id}")]
+        public async Task<ActionResult> UpdateBook(int id, [FromBody] Book book)
+        {
+            try
+            {
+                // Check if route ID matches body ID (if applicable)
+                if (book.BookId != 0 && book.BookId != id)
+                {
+                    return BadRequest("Book ID in the body does not match URL.");
+                }
 
 
-        //        var updated = await _bookRepository.UpdateBook(id, book.BookTitle, book.BookAuthor, book.BookPages, book.BookStatus, book.BookFeeling);
+                var updated = await _bookRepository.UpdateBook(id, book.BookTitle, book.BookAuthor, book.BookPages, book.BookStatus, book.BookFeeling);
 
-        //        if (updated == null)
-        //        {
-        //            return NotFound($"Book with ID {id} not found.");
-        //        }
+                if (updated == null)
+                {
+                    return NotFound($"Book with ID {id} not found.");
+                }
 
-        //        return NoContent();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Problem(
-        //            detail: ex.Message,
-        //            title: "An error occurred while updating the book.",
-        //            statusCode: StatusCodes.Status500InternalServerError);
-        //    }
-        //}
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                    detail: ex.Message,
+                    title: "An error occurred while updating the book.",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

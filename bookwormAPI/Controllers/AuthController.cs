@@ -43,6 +43,7 @@ namespace bookwormAPI.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("refresh")]
         public async Task<ActionResult> Refresh([FromBody] UserDTO userDTO)
         {
@@ -59,5 +60,4 @@ namespace bookwormAPI.Controllers
             return Ok(new { Message = "Logged out successfully." });
         }
     }
-}
 }

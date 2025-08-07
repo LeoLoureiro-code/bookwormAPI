@@ -5,6 +5,7 @@ using bookwormAPI.EF.DataAccess.Repositories;
 using bookwormAPI.EF.DataAccess.Repositories.Interfaces;
 using bookwormAPI.EF.DataAccess.Services;
 using bookwormAPI.EF.DataAccess.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,7 @@ namespace bookwormAPI.Controllers
         }
 
         //Get: api/Users
+        [Authorize]
         [HttpGet("all-users")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllusers()
         {
@@ -48,7 +50,7 @@ namespace bookwormAPI.Controllers
         }
 
         //Get:api/Users/5
-
+        [Authorize]
         [HttpGet("find-by-id/{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -76,6 +78,7 @@ namespace bookwormAPI.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("find-by-credentials")]
 
         public async Task<ActionResult<User>> GetUserByCredentials([FromBody] LoginDTO login)
@@ -129,6 +132,7 @@ namespace bookwormAPI.Controllers
 
         }
 
+        [Authorize]
         [HttpPut("update-user/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] User user)
         {
@@ -170,6 +174,7 @@ namespace bookwormAPI.Controllers
 
 
         // DELETE: api/Users/5
+        [Authorize]
         [HttpDelete("delete-user/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
         {
