@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xunit;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -46,22 +47,33 @@ public class AuthServiceTests
             UserPasswordHash = "hashedpassword"
         };
 
-        _userRepoMock.Setup(repo => repo.GetUserByName("test@example.com"))
-                     .ReturnsAsync(fakeUser);
+        var configMock = new Mock<IConfiguration>();
+        var testKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        configMock.Setup(c => c["Jwt:Key"]).Returns(testKey);
+        configMock.Setup(c => c["Jwt:Issuer"]).Returns("TestIssuer");
+        configMock.Setup(c => c["Jwt:Audience"]).Returns("TestAudience");
 
-        _passwordServiceMock.Setup(p => p.VerifyPassword("hashedpassword", "123456"))
-                            .Returns(true);
+        var userRepoMock = new Mock<IUserRepository>();
+        userRepoMock.Setup(repo => repo.GetUserByName("test@example.com"))
+                    .ReturnsAsync(fakeUser);
 
-        _userRepoMock.Setup(repo => repo.UpdateUser(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-                     .ReturnsAsync(fakeUser);
+        var passwordServiceMock = new Mock<IPasswordService>();
+        passwordServiceMock.Setup(p => p.VerifyPassword("hashedpassword", "123456"))
+                           .Returns(true);
+
+        userRepoMock.Setup(repo => repo.UpdateUser(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+                    .ReturnsAsync(fakeUser);
+
+        var authService = new AuthService(userRepoMock.Object, passwordServiceMock.Object, configMock.Object);
 
         // Act
-        var (accessToken, refreshToken) = await _authService.LoginAsync("test@example.com", "123456");
+        var (accessToken, refreshToken) = await authService.LoginAsync("test@example.com", "123456");
 
         // Assert
         Assert.False(string.IsNullOrEmpty(accessToken));
         Assert.False(string.IsNullOrEmpty(refreshToken));
     }
+
 
     [Fact]
     public async Task LoginAsync_InvalidPassword_ThrowsException()
