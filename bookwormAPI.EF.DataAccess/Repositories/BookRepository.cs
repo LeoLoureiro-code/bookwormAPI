@@ -56,6 +56,7 @@ namespace bookwormAPI.EF.DataAccess.Repositories
                 BookTitle = book.Title,
                 BookAuthor = book.Author,
                 BookPages = book.Pages,
+                BookStatus = book.Status,
                 BookFeeling = book.Feeling,
             };
 
