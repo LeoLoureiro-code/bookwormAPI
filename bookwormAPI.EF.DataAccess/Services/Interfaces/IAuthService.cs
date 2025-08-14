@@ -9,7 +9,7 @@ namespace bookwormAPI.EF.DataAccess.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<(string AccessToken, string RefreshToken)> LoginAsync(string username, string password);
+        Task<(string AccessToken, string RefreshToken, int userId)> LoginAsync(string username, string password);
 
 
         Task RevokeAndRefreshTokenAsync(string email, string password);

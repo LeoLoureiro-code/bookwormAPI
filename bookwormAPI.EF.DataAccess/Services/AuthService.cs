@@ -32,7 +32,7 @@ namespace bookwormAPI.EF.DataAccess.Services
 
         }
 
-        public async Task<(string AccessToken, string RefreshToken)> LoginAsync(string username, string password)
+        public async Task<(string AccessToken, string RefreshToken, int userId)> LoginAsync(string username, string password)
         {
             var user = await _userRepository.GetUserByName(username);
             if (user == null)
@@ -50,7 +50,7 @@ namespace bookwormAPI.EF.DataAccess.Services
             user.ExpiresAt = DateTime.UtcNow.AddDays(7);
             await _userRepository.UpdateUser(user.UserId, user.UserName, user.UserPasswordHash);
 
-            return (accessToken, refreshToken);
+            return (accessToken, refreshToken, user.UserId);
         }
 
         private string GenerateJwtToken(User user)
