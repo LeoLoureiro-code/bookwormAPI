@@ -27,11 +27,12 @@ namespace bookwormAPI.Controllers
         {
             try
             {
-                var (accessToken, refreshToken) = await _authService.LoginAsync(login.Email, login.Password);
+                var (accessToken, refreshToken, userId) = await _authService.LoginAsync(login.Email, login.Password);
                 return Ok(new
                 {
                     accessToken,
-                    refreshToken
+                    refreshToken,
+                    userId,
                 });
             }
             catch (Exception ex)
@@ -47,7 +48,7 @@ namespace bookwormAPI.Controllers
         [HttpPost("refresh")]
         public async Task<ActionResult> Refresh([FromBody] UserDTO userDTO)
         {
-            var (newAccessToken, newRefreshToken) = await _authService.LoginAsync(userDTO.Email, userDTO.Password);
+            var (newAccessToken, newRefreshToken, userId) = await _authService.LoginAsync(userDTO.Email, userDTO.Password);
             return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
         }
 
