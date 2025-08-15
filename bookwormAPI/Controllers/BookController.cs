@@ -36,7 +36,7 @@ namespace bookwormAPI.Controllers
 
                 return Ok(users);
             }
-            catch (Exception ex)
+            catch (Exception ex )
             {
                 return Problem(
                     detail: ex.Message,
@@ -62,7 +62,7 @@ namespace bookwormAPI.Controllers
 
         //Get:api/Books/5
         [Authorize]
-        [HttpGet("find-by-id/{id}")]
+        [HttpGet("find-by-id")]
         public async Task<ActionResult<Book>> GetBook(int id)
         {
             try
@@ -127,7 +127,6 @@ namespace bookwormAPI.Controllers
         {
             try
             {
-                // Check if route ID matches body ID (if applicable)
                 if (book.BookId != 0 && book.BookId != id)
                 {
                     return BadRequest("Book ID in the body does not match URL.");
