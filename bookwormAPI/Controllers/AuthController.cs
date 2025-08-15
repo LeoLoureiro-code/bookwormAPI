@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace bookwormAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("Bookworm/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
